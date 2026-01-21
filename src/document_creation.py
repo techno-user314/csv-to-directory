@@ -7,6 +7,11 @@ IMAGE_SCALING = 0.8
 def emu_to_twips(emu):
     return int(emu * 1440 / 914400)
 
+def add_preset_page(doc, page_photo_path):
+    page = doc.add_paragraph()
+    run = page.add_run()
+    run.add_picture(coverImage, width=Inches(8))
+
 def add_photo_grid_page(doc, photo_paths, photo_labels):
     section = doc.sections[-1]
     section.top_margin = Inches(0.25)
@@ -58,10 +63,13 @@ def add_photo_grid_page(doc, photo_paths, photo_labels):
                 p_img.paragraph_format.space_after = 0
 
                 run = p_img.add_run()
-                run.add_picture(
-                    photo_paths[photo_index],
-                    width=image_size
-                )
+                try:
+                    run.add_picture(
+                        photo_paths[photo_index],
+                        width=image_size
+                    )
+                except:
+                    print(photo_paths[photo_index])
 
                 # --- Name labels ---
                 p_label = cell.add_paragraph()
@@ -76,6 +84,6 @@ def add_photo_grid_page(doc, photo_paths, photo_labels):
                 lastname_run.font.underline = True
 
                 rest_run = p_label.add_run(", "+label[1])
-                rest_run.font.size = Pt(14)
+                rest_run.font.size = Pt(12)
 
                 photo_index += 1
