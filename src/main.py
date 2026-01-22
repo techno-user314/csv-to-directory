@@ -3,7 +3,7 @@ from docx import Document
 
 from data_parsing import read_data
 from photo_finder import get_photo_path
-from document_creation import add_photo_grid_page, add_preset_page
+from document_creation import add_photo_grid_page, add_preset_page, add_landscape_table
 
 people, families = read_data("data.csv")
 
@@ -50,10 +50,23 @@ for i in range(0, len(photos), 12):
     add_photo_grid_page(doc, photos[i:i+12], family_labels[i:i+12])
     pages += 1
 
+# Add info table
+headers = ["First Name", "Last Name",
+           "Cell Phone", "Email",
+           "Address", "City", "State", "Zip Code"]
+def people_data():
+    for person in people:
+        yield [str(person.firstname), str(person.lastname),
+               str(person.mobile_number), str(person.email),
+               str(person.address), str(person.city), str(person.state), str(person.zip_code)]
+
+add_landscape_table(doc, headers, people_data())
+doc.add_page_break()
+
 # Add final pages
 if pages % 2 == 0:
     doc.add_page_break()
-add_preset_page(doc, "Other/Final_Page.png")
+add_preset_page(doc, "Other/Label_Page.png")
 
 # Save
-doc.save("photo_grid.docx")
+doc.save("directory.docx")
