@@ -1,6 +1,13 @@
 import pandas as pd
+import json
 
-DONT_INCLUDE = []
+try:
+    with open("special_cases.json", "r", encoding="utf-8") as file:
+        special_cases = json.load(file)
+except FileNotFoundError:
+    print("File not found: special_cases.json")
+except json.JSONDecodeError as e:
+    print("Invalid JSON:", e)
 
 class Person:
     def __init__(self, first_name, last_name, is_primary=False, is_spouse=False):
@@ -81,11 +88,22 @@ def read_data(csv_path):
         people.append(new_person)
 
     # Ignore people/families who have requested it
+    dont_include = special_cases["ignore family"]
     for person in people:
-        if person.formalname + " " + person.lastname in DONT_INCLUDE \
-                or person.firstname + " " + person.lastname in DONT_INCLUDE:
+        if person.formalname + " " + person.lastname in dont_include \
+                or person.firstname + " " + person.lastname in dont_include:
             print(f"Excluding the family of {person} from directory")
             families.pop(person.family_id)
     people = [p for p in people if p.family_id in families.keys()]
+
+    # Change the info for people who have requested it
+    change = special_cases["change info"]
+    for info in ["email", "phone", "address"]:
+        for update in change[info]:
+            for person in people:
+                if person.formalname + " " + person.lastname == update["name"] \
+                        or person.firstname + " " + person.lastname == update["name"]:
+                    setattr(person, info, update["new info"])
+                    break
 
     return people, families
