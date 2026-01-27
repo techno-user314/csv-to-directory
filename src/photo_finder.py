@@ -44,6 +44,6 @@ def get_photo_path(family_member_list, lastname):
                 photo_path = f"{try_path2} family.jpg"
 
     if photo_path is None:
-        print(f"WARNING: No photo found for {lastname}")
+        print(f"WARNING: No photo found for {lastname} {[str(p) for p in family_member_list]}")
 
     return photo_path, label
