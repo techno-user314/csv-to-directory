@@ -69,12 +69,12 @@ def read_data(csv_path):
             if not pd.isnull(row["Family Members"]):
                 new_person.set_family(row["Family ID"], row["Family Members"].split(", "))
             else:
-                new_person.set_family(row["Family ID"], [])
+                new_person.set_family(row["Family ID"], [firstname])
             if row["Family ID"] not in families.keys():
                 families.update({row["Family ID"]:lastname})
         else:
             no_family += 1
-            new_person.set_family(-no_family, [])
+            new_person.set_family(-no_family, [firstname])
             new_person.is_primary = True
             families.update({-no_family: lastname})
 
