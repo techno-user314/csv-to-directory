@@ -113,7 +113,7 @@ def add_photo_grid_page(doc, photo_paths, photo_labels):
                         width=image_size
                     )
                 except:
-                    print(photo_paths[photo_index])
+                    print(f"ERROR: {photo_paths[photo_index]} is currupt unopenable")
 
                 # --- Name labels ---
                 p_label = cell.add_paragraph()
@@ -127,8 +127,8 @@ def add_photo_grid_page(doc, photo_paths, photo_labels):
                 lastname_run.font.bold = True
                 lastname_run.font.underline = True
 
-                rest_run = p_label.add_run(", " + label[1])
-                rest_run.font.size = Pt(12)
+                names_run = p_label.add_run(", " + label[1])
+                names_run.font.size = Pt(12)
 
                 photo_index += 1
 
