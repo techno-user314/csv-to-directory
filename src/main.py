@@ -1,9 +1,11 @@
 import pandas as pd
 from docx import Document
+from docx.enum.section import WD_ORIENT
 
 from data_parsing import read_data
 from photo_finder import get_photo_path
 from document_creation import add_photo_grid_page, add_preset_page, add_landscape_table
+from document_creation import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, BOTTOM_MARGIN
 
 people, families = read_data("data.csv")
 
@@ -51,14 +53,20 @@ for i in range(0, len(photos), 12):
     pages += 1
 
 # Add info table
+people.sort(key=lambda p: p.lastname) # Sort people by lastname
+
 headers = ["First Name", "Last Name",
            "Cell Phone", "Email",
            "Address", "City", "State", "Zip Code"]
 def people_data():
     for person in people:
-        yield [str(person.firstname), str(person.lastname),
-               str(person.mobile_number), str(person.email),
-               str(person.address), str(person.city), str(person.state), str(person.zip_code)]
+        info = [person.firstname, person.lastname,
+                person.mobile_number, person.email,
+                person.address, person.city, person.state, person.zip_code]
+        for i in range(len(info)):
+            if pd.isna(info[i]): info[i] = ""
+            else: info[i] = str(info[i])
+        yield info
 
 add_landscape_table(doc, headers, people_data())
 doc.add_page_break()
@@ -66,6 +74,16 @@ doc.add_page_break()
 # Add final pages
 if pages % 2 == 0:
     doc.add_page_break()
+
+section = doc.add_section()
+section.orientation = WD_ORIENT.PORTRAIT
+section.page_width, section.page_height = section.page_height, section.page_width
+
+section.left_margin = Inches(LEFT_MARGIN)
+section.right_margin = Inches(RIGHT_MARGIN)
+section.top_margin = Inches(TOP_MARGIN)
+section.bottom_margin = Inches(BOTTOM_MARGIN)
+
 add_preset_page(doc, "Other/Label_Page.png")
 
 # Save
