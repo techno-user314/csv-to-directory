@@ -44,6 +44,11 @@ class Person:
         self.family_id = fid_num
         self.family = family_member_names
 
+    def is_named(self, fullname_str):
+        pref_name = self.firstname + " " + self.lastname
+        formal_name = self.formalname + " " + self.lastname
+        return (pref_name==fullname_str or formal_name==fullname_str)
+
     def __str__(self):
         return (f"{self.firstname} {self.lastname}")
 
@@ -101,9 +106,18 @@ def read_data(csv_path):
     for info in ["email", "phone", "address"]:
         for update in change[info]:
             for person in people:
-                if person.formalname + " " + person.lastname == update["name"] \
-                        or person.firstname + " " + person.lastname == update["name"]:
+                if person.is_named(update["name"]):
                     setattr(person, info, update["new info"])
                     break
+
+    # Change the listed members for certain families
+    for update in change["family"]:
+        family_to_change = None
+        for person in people:
+            if person.is_named(update["name"]):
+                family_to_change = person.family_id
+        if family_to_change:
+            for person in [p for p in people if p.family_id==family_to_change]:
+                person.family = update["new info"]
 
     return people, families
